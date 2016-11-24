@@ -1,0 +1,6 @@
+{%- if pillar.aodh is defined %}
+include:
+{%- if pillar.aodh.server is defined %}
+- aodh.server
+{%- endif %}
+{%- endif %}

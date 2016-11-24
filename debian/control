@@ -1,0 +1,15 @@
+Source: salt-formula-aodh
+Maintainer: devops <devops@mirantis.com>
+Section: admin
+Priority: optional
+Build-Depends: debhelper (>= 9), salt-master, python, python-yaml
+Standards-Version: 3.9.6
+Homepage: http://www.tcpcloud.eu
+Vcs-Browser: https://github.com/tcpcloud/salt-formula-aodh
+Vcs-Git: https://github.com/tcpcloud/salt-formula-aodh.git
+
+Package: salt-formula-aodh
+Architecture: all
+Depends: ${misc:Depends}, salt-master, reclass
+Description: aodh salt formula
+ Install and configure aodh system.

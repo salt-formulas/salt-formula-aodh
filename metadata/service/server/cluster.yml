@@ -1,0 +1,10 @@
+applications:
+- aodh
+classes:
+- service.aodh.support
+parameters:
+  aodh:
+    server:
+      enabled: true
+      bind:
+        address: 0.0.0.0
