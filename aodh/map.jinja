@@ -1,29 +1,11 @@
 
-{%- set source_engine = salt['pillar.get']('aodh:server:source:engine') %}
-
-{%- load_yaml as base_defaults %}
-{%- if source_engine == 'git' %}
-Debian:
-  pkgs:
-  - python-psycopg2
-  dir:
-    base: /srv/aodh/venv
-    home: /var/lib/aodh
-    workspace: /srv/aodh/workspace
-RedHat:
-  pkgs:
-  - python-psycopg2
-  dir:
-    base: /srv/aodh/venv
-    home: /var/lib/aodh
-    workspace: /srv/aodh/workspace
-{%- else %}
-Debian:
-  pkgs:
-  - aodh
-  dir:
-    base: /usr/lib/aodh
-{%- endif %}
-{%- endload %}
-
-{%- set server = salt['grains.filter_by'](base_defaults, merge=salt['pillar.get']('aodh:server')) %}
+{% set server = salt['grains.filter_by']({
+    'Debian': {
+        'pkgs': ['aodh-api', 'aodh-evaluator', 'aodh-notifier', 'aodh-listener', 'python-aodhclient'],
+        'services': ['aodh-api', 'aodh-evaluator', 'aodh-notifier', 'aodh-listener'],
+    },
+    'RedHat': {
+        'pkgs':['openstack-aodh-api', 'openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener', 'python-aodhclient'],
+        'services': ['openstack-aodh-api', 'openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener'],
+    },
+}, merge=salt['pillar.get']('aodh:server')) %}
