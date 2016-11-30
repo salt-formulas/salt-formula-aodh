@@ -1,0 +1,8 @@
+name: aodh
+os: Debian, RedHat
+os_family: Debian, RedHat
+version: 201606
+release: 1
+summary: Formula for installing and configuring aodh
+description: Formula for installing and configuring aodh
+top_level_dir: ceilometer

@@ -1,12 +1,39 @@
-{%- from "aodh/map.jinja" import server with context %}
-# Fill in documentation details
 doc:
-  name: aodh
-  description: Some service info
+  name: Aodh
+  description: Alarms provide user-oriented Monitoring-as-a-Service for resources running on OpenStack. This type of monitoring ensures you can automatically scale in or out a group of instances through the Orchestration service, but you can also use alarms for general-purpose awareness of your cloud resources’ health.
   role:
+  {%- if pillar.aodh.server is defined %}
+  {%- from "aodh/map.jinja" import server with context %}
     server:
       name: server
+      endpoint:
+        aodh_api:
+          name: aodh-api
+          type: aodh-api
+          address: http://{{ server.bind.host }}:{{ server.bind.port }}
+          protocol: http
       param:
-        some_param:
-          name: "Some name"
-          value: "some value"
+        bind:
+          value: {{ server.bind.host }}:{{ server.bind.port }}
+        ttl:
+          name: "Time to live for ceilometer metrics"
+          value: {{ server.ttl }}
+        version:
+          name: "Version"
+          value: {{ server.version }}
+        database_host:
+          name: "Database"
+          value: {{ server.database.user }}@{{ server.database.host }}:{{ server.database.port }}/{{ server.database.name }}
+        message_queue_ip:
+          name: "Message queue"
+          value: {{ server.message_queue.user }}@{{ server.message_queue.host }}:{{ server.message_queue.port }}{{ server.message_queue.virtual_host }}
+        identity_host:
+          name: "Identity service"
+          value: {{ server.identity.user }}@{{ server.identity.host }}:{{ server.identity.port }}
+        packages:
+          value: |
+            {%- for pkg in server.pkgs %}
+            {%- set pkg_version = "dpkg -l "+pkg+" | grep "+pkg+" | awk '{print $3}'" %}
+            * {{ pkg }}: {{ salt['cmd.run'](pkg_version) }}
+            {%- endfor %}
+  {%- endif %}
