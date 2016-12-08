@@ -1,7 +1,7 @@
 {%- from "aodh/map.jinja" import server with context %}
 {%- if server.enabled %}
 # Exclude unsupported openstack versions
-{%- if server.version >= "mitaka"  %}
+{%- if server.version not in ['liberty', 'juno', 'kilo'] %}
 
 server_packages:
   pkg.installed:
