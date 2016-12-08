@@ -14,6 +14,13 @@ server_packages:
   - require:
     - pkg: server_packages
 
+aodh_syncdb:
+  cmd.run:
+  - name: aodh-dbsync
+  - require:
+    - file: /etc/aodh/aodh.conf
+    - pkg: server_packages
+
 aodh_server_services:
   service.running:
   - names: {{ server.services }}
