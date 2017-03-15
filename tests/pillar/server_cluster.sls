@@ -15,6 +15,7 @@ aodh:
       tenant: service
       user: ceilometer
       password: password
+      endpoint_type: internalURL
     message_queue:
       engine: rabbitmq
       members:

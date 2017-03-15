@@ -865,7 +865,7 @@ os_region_name={{ server.get('region', 'RegionOne') }}
 
 # Type of endpoint in Identity service catalog to use for
 # communication with OpenStack services. (string value)
-#os_endpoint_type=publicURL
+os_endpoint_type={{ server.identity.get('endpoint_type', 'publicURL') }}
 
 # Disables X.509 certificate validation when an SSL connection
 # to Identity Service is established. (boolean value)

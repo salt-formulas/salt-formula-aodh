@@ -3,6 +3,8 @@ applications:
 classes:
 - service.aodh.support
 parameters:
+  _param:
+    keystone_aodh_endpoint_type: internalURL
   aodh:
     server:
       enabled: true
@@ -28,6 +30,7 @@ parameters:
         tenant: service
         user: aodh
         password: ${_param:keystone_aodh_password}
+        endpoint_type: ${_param:keystone_aodh_endpoint_type}
       message_queue:
         engine: rabbitmq
         host: ${_param:cluster_vip_address}
