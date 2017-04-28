@@ -3,19 +3,47 @@
 aodh
 ==================================
 
-Service aodh description
+Aodh is an alarming service for OpenStack. It used to be a part of Ceilometer, but starting from Mitaka it
+is a separate project. Aodh supports several types of alarms like threshold, event, composite and gnocchi-specific.
+In cluster mode, coordination is enabled via tooz with Redis backend.  
+MySQL is used as a data backend for alarms and alarm history.
 
 Sample pillars
 ==============
 
-Single aodh service
+Cluster aodh service
 
 .. code-block:: yaml
 
     aodh:
       server:
         enabled: true
-        version: icehouse
+        version: mitaka
+        ttl: 86400
+        cluster: true 
+      database:
+        engine: "mysql+pymysql"
+        host: 10.0.106.20
+        port: 3306
+        name: aodh
+        user: aodh
+        password: password
+      bind:
+        host: 10.0.106.20
+        port: 8042
+      identity:
+        engine: keystone
+        host: 10.0.106.20 
+        port: 35357
+        tenant: service
+        user: aodh
+        password: password 
+      message_queue:
+        engine: rabbitmq
+        port: 5672
+        user: openstack
+        password: password
+        virtual_host: '/openstack'
 
 
 Development and testing
@@ -56,7 +84,8 @@ Usage:
 Read more
 =========
 
-* links
+* https://docs.openstack.org/cli-reference/aodh.html
+* https://docs.openstack.org/developer/aodh/
 
 Documentation and Bugs
 ======================

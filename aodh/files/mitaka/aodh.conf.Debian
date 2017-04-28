@@ -339,7 +339,9 @@ pecan_debug = False
 # per-deployment central agent and per-host compute agent won't do
 # workload partitioning and will only function correctly if a single
 # instance of that service is running. (string value)
-#backend_url = <None>
+{%- if server.coordination_backend is defined %}
+backend_url = {{ server.coordination_backend.url }}
+{%-  endif %}
 
 # Number of seconds between heartbeats for distributed coordination.
 # (floating point value)
