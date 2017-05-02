@@ -14,12 +14,16 @@ server_packages:
   - require:
     - pkg: server_packages
 
+{%- if not grains.get('noservices', False) %}
+
 aodh_syncdb:
   cmd.run:
   - name: aodh-dbsync
   - require:
     - file: /etc/aodh/aodh.conf
     - pkg: server_packages
+
+{%- endif %}
 
 aodh_server_services:
   service.running:

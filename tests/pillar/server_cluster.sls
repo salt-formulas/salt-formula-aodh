@@ -27,11 +27,12 @@ aodh:
       virtual_host: '/openstack'
       # Workaround for https://bugs.launchpad.net/ceilometer/+bug/1337715
       rpc_thread_pool_size: 5
-      database:
-        engine: mysql
-        host: 127.0.0.1
-        port: 3306
-        name: aodh
-        user: aodh
-        password: test
-
+    database:
+      engine: mysql
+      host: 127.0.0.1
+      port: 3306
+      name: aodh
+      user: aodh
+      password: test
+    notifications:
+      store_events: default
