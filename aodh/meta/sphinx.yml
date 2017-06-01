@@ -1,6 +1,10 @@
 doc:
   name: Aodh
-  description: Alarms provide user-oriented Monitoring-as-a-Service for resources running on OpenStack. This type of monitoring ensures you can automatically scale in or out a group of instances through the Orchestration service, but you can also use alarms for general-purpose awareness of your cloud resources’ health.
+  description: |
+    Alarms provide user-oriented Monitoring-as-a-Service for resources running on OpenStack.
+    This type of monitoring ensures you can automatically scale in or out a group of instances
+    through the Orchestration service, but you can also use alarms for general-purpose
+    awareness of your cloud resources health.
   role:
   {%- if pillar.aodh.server is defined %}
   {%- from "aodh/map.jinja" import server with context %}
