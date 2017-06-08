@@ -3,7 +3,7 @@
 # Exclude unsupported openstack versions
 {%- if server.version not in ['liberty', 'juno', 'kilo'] %}
 
-server_packages:
+aodh_server_packages:
   pkg.installed:
   - names: {{ server.pkgs }}
 
@@ -12,7 +12,7 @@ server_packages:
   - source: salt://aodh/files/{{ server.version }}/aodh.conf.{{ grains.os_family }}
   - template: jinja
   - require:
-    - pkg: server_packages
+    - pkg: aodh_server_packages
 
 aodh_syncdb:
   cmd.run:
@@ -22,7 +22,30 @@ aodh_syncdb:
   {%- endif %}
   - require:
     - file: /etc/aodh/aodh.conf
-    - pkg: server_packages
+    - pkg: aodh_server_packages
+
+
+{%- if server.version not in ['mitaka', 'newton'] %}
+/etc/apache2/sites-available/aodh-api.conf:
+  file.managed:
+  - source: salt://aodh/files/{{ server.version }}/aodh-api.apache2.conf.Debian
+  - template: jinja
+  - require:
+    - pkg: aodh_server_packages
+
+aodh_api_config:
+  file.symlink:
+     - name: /etc/apache2/sites-enabled/aodh-api.conf
+     - target: /etc/apache2/sites-available/aodh-api.conf
+
+aodh_apache_restart:
+  service.running:
+  - enable: true
+  - name: apache2
+  - watch:
+    - file: /etc/aodh/aodh.conf
+    - file: /etc/apache2/sites-available/aodh-api.conf
+{%- endif %}
 
 aodh_server_services:
   service.running:

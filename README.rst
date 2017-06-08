@@ -44,6 +44,14 @@ Cluster aodh service
         user: openstack
         password: password
         virtual_host: '/openstack'
+      cache:
+        members:
+        - host: 10.10.10.10
+            port: 11211
+        - host: 10.10.10.11
+            port: 11211
+        - host: 10.10.10.12
+            port: 11211
 
 
 Development and testing

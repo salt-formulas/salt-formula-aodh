@@ -2,10 +2,16 @@
 {% set server = salt['grains.filter_by']({
     'Debian': {
         'pkgs': ['aodh-api', 'aodh-evaluator', 'aodh-notifier', 'aodh-listener', 'python-aodhclient'],
-        'services': ['aodh-api', 'aodh-evaluator', 'aodh-notifier', 'aodh-listener'],
+        'services': ['aodh-evaluator', 'aodh-notifier', 'aodh-listener'],
+        'webserved': ['aodh-api'],
     },
     'RedHat': {
         'pkgs':['openstack-aodh-api', 'openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener', 'python-aodhclient'],
-        'services': ['openstack-aodh-api', 'openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener'],
+        'services': ['openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener'],
+        'webserved': ['openstack-aodh-api'],
     },
 }, merge=salt['pillar.get']('aodh:server')) %}
+
+{%- if salt['pillar.get']('aodh:server:version', 'mitaka') in ['mitaka', 'newton'] %}
+    {%- do server.update({'services': server.services + server.webserved}) %}
+{%- endif %}
