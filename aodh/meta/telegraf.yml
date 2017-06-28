@@ -1,0 +1,9 @@
+{%- from "aodh/map.jinja" import server with context %}
+{%- if server.get('enabled', False) %}
+agent:
+  input:
+    http_response:
+      aodh-api:
+        address: "http://{{ server.bind.host|replace('0.0.0.0', '127.0.0.1') }}:{{ server.bind.port }}/"
+        expected_code: 300
+{%- endif %}
