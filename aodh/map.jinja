@@ -12,6 +12,6 @@
     },
 }, merge=salt['pillar.get']('aodh:server')) %}
 
-{%- if salt['pillar.get']('aodh:server:version', 'mitaka') in ['mitaka', 'newton'] %}
+{%- if salt['pillar.get']('aodh:server:version', 'mitaka') in ['mitaka'] %}
     {%- do server.update({'services': server.services + server.webserved}) %}
 {%- endif %}

@@ -1,0 +1,24 @@
+{%- from "aodh/map.jinja" import server with context %}
+Listen {{ server.bind.host }}:{{ server.bind.port }}
+
+<VirtualHost *:{{ server.bind.port }}>
+    WSGIDaemonProcess aodh-api processes=2 threads=10 user=aodh display-name=%{GROUP}
+    WSGIProcessGroup aodh-api
+    WSGIScriptAlias / /usr/share/aodh-common/app.wsgi
+    WSGIApplicationGroup %{GLOBAL}
+    <IfVersion >= 2.4>
+        ErrorLogFormat "%{cu}t %M"
+    </IfVersion>
+    ErrorLog /var/log/apache2/aodh.log
+    CustomLog /var/log/apache2/aodh_access.log combined
+    <Directory /usr/bin>
+        <IfVersion >= 2.4>
+            Require all granted
+        </IfVersion>
+        <IfVersion < 2.4>
+            Order allow,deny
+            Allow from all
+        </IfVersion>
+    </Directory>
+
+</VirtualHost>
