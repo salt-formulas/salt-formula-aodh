@@ -30,7 +30,11 @@ doc:
           value: {{ server.database.user }}@{{ server.database.host }}:{{ server.database.port }}/{{ server.database.name }}
         message_queue_ip:
           name: "Message queue"
+          {%- if server.message_queue.members is defined %}
+          value: {% for member in server.message_queue.members -%}{{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}{%- if not loop.last -%},{%- endif -%}{%- endfor -%}/{{ server.message_queue.virtual_host }}
+          {%- else %}
           value: {{ server.message_queue.user }}@{{ server.message_queue.host }}:{{ server.message_queue.port }}{{ server.message_queue.virtual_host }}
+          {%- endif %}
         identity_host:
           name: "Identity service"
           value: {{ server.identity.user }}@{{ server.identity.host }}:{{ server.identity.port }}
