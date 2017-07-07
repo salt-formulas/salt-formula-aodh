@@ -26,8 +26,14 @@ aodh_syncdb:
 
 # for Newton and newer
 {%- if server.version not in ['mitaka'] %}
-/etc/apache2/sites-available/apache-aodh.conf:
+
+aodh_api_apache_config:
   file.managed:
+  {%- if server.version == 'newton' %}
+  - name: /etc/apache2/sites-available/apache-aodh.conf
+  {%- else %}
+  - name: /etc/apache2/sites-available/aodh-api.conf
+  {%- endif %}
   - source: salt://aodh/files/{{ server.version }}/apache-aodh.apache2.conf.Debian
   - template: jinja
   - require:
@@ -35,8 +41,13 @@ aodh_syncdb:
 
 aodh_api_config:
   file.symlink:
+     {%- if server.version == 'newton' %}
      - name: /etc/apache2/sites-enabled/apache-aodh.conf
      - target: /etc/apache2/sites-available/apache-aodh.conf
+     {%- else %}
+     - name: /etc/apache2/sites-enabled/aodh-api.conf
+     - target: /etc/apache2/sites-available/aodh-api.conf
+     {%- endif %}
 
 aodh_apache_restart:
   service.running:
@@ -44,7 +55,8 @@ aodh_apache_restart:
   - name: apache2
   - watch:
     - file: /etc/aodh/aodh.conf
-    - file: /etc/apache2/sites-available/apache-aodh.conf
+    - file: aodh_api_apache_config
+
 {%- endif %}
 
 aodh_server_services:
