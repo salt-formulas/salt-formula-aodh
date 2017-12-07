@@ -14,6 +14,83 @@ aodh_server_packages:
   - require:
     - pkg: aodh_server_packages
 
+{% for service_name in server.services %}
+{{ service_name }}_default:
+  file.managed:
+    - name: /etc/default/{{ service_name }}
+    - source: salt://aodh/files/default
+    - template: jinja
+    - defaults:
+        service_name: {{ service_name }}
+        values: {{ server }}
+    - require:
+      - pkg: aodh_server_packages
+    - watch_in:
+      - service: aodh_server_services
+{% endfor %}
+
+{% if server.logging.log_appender %}
+
+{%- if server.logging.log_handlers.get('fluentd', {}).get('enabled', False) %}
+aodh_fluentd_logger_package:
+  pkg.installed:
+    - name: python-fluent-logger
+{%- endif %}
+
+aodh_general_logging_conf:
+  file.managed:
+    - name: /etc/aodh/logging.conf
+    - source: salt://aodh/files/logging.conf
+    - template: jinja
+    - user: aodh
+    - group: aodh
+    - require:
+      - pkg: aodh_server_packages
+{%- if server.logging.log_handlers.get('fluentd', {}).get('enabled', False) %}
+      - pkg: aodh_fluentd_logger_package
+{%- endif %}
+    - defaults:
+        service_name: aodh
+        values: {{ server }}
+    - watch_in:
+      - service: aodh_server_services
+{%- if server.version not in ['mitaka'] %}
+      - service: aodh_apache_restart
+{%- endif %}
+
+/var/log/aodh/aodh.log:
+  file.managed:
+    - user: aodh
+    - group: aodh
+    - watch_in:
+      - service: aodh_server_services
+{%- if server.version not in ['mitaka'] %}
+      - service: aodh_apache_restart
+{%- endif %}
+
+{% for service_name in server.services %}
+{{ service_name }}_logging_conf:
+  file.managed:
+    - name: /etc/aodh/logging/logging-{{ service_name }}.conf
+    - source: salt://aodh/files/logging.conf
+    - template: jinja
+    - user: aodh
+    - group: aodh
+    - require:
+      - pkg: aodh_server_packages
+{%- if server.logging.log_handlers.get('fluentd', {}).get('enabled', False) %}
+      - pkg: aodh_fluentd_logger_package
+{%- endif %}
+    - makedirs: True
+    - defaults:
+        service_name: {{ service_name }}
+        values: {{ server }}
+    - watch_in:
+      - service: aodh_server_services
+{% endfor %}
+
+{% endif %}
+
 aodh_syncdb:
   cmd.run:
   - name: aodh-dbsync

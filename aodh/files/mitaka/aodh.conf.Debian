@@ -102,6 +102,9 @@
 # logging_context_format_string). (string value)
 # Deprecated group/name - [DEFAULT]/log_config
 #log_config_append = <None>
+{%- if server.logging.log_appender %}
+log_config_append=/etc/aodh/logging.conf
+{%- endif %}
 
 # Defines the format string for %%(asctime)s in log records. Default:
 # %(default)s . This option is ignored if log_config_append is set.

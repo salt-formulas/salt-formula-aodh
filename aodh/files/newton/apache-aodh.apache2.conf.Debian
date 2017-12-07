@@ -10,7 +10,7 @@ Listen {{ server.bind.host }}:{{ server.bind.port }}
         ErrorLogFormat "%{cu}t %M"
     </IfVersion>
     ErrorLog /var/log/apache2/aodh.log
-    CustomLog /var/log/apache2/aodh_access.log combined
+    CustomLog /var/log/apache2/aodh_access.log "%v:%p %h %l %u %t \"%r\" %>s %D %O \"%{Referer}i\" \"%{User-Agent}i\""
     <Directory /usr/bin>
         <IfVersion >= 2.4>
             Require all granted

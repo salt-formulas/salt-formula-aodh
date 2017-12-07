@@ -1,0 +1,170 @@
+{%- if pillar.get('fluentd', {}).get('agent', {}).get('enabled', False) %}
+{%- from "aodh/map.jinja" import server with context %}
+{%- set apache_wsgi = server.version not in ['mitaka'] %}
+{%- set positiondb = pillar.fluentd.agent.dir.positiondb %}
+agent:
+  config:
+    label:
+      forward_input:
+        input:
+          generic_forward_input:
+            type: forward
+            bind: 0.0.0.0
+            port: 24224
+        match:
+          route_openstack_aodh:
+            tag: openstack.aodh.**
+            type: relabel
+            label: openstack_aodh
+{%- if apache_wsgi %}
+      openstack_aodh_wsgi:
+        input:
+          aodh_api_wsgi_in_tail:
+            type: tail
+            path: /var/log/apache2/aodh_access.log
+            tag: openstack.aodh
+            pos_file: {{ positiondb }}/aodh.wsgi.pos
+            parser:
+              type: regexp
+              time_key: Timestamp
+              time_format: '%d/%b/%Y:%H:%M:%S %z'
+              keep_time_key: false
+              # Apache format: https://regex101.com/r/WeCT7s/5
+              format: '/(?<hostname>[\w\.\-]+)\:(?<port>\d+)\s(?<http_client_ip_address>[\d\.]+)\s\-\s\-\s\[(?<Timestamp>.*)\]\s(?<Payload>\"(?<http_method>[A-Z]+)\s(?<http_url>\S+)\s(?<http_version>[.\/\dHTFSP]+)\"\s(?<http_status>\d{3})\s(?<http_response_time>\d+)\s(?<http_response_size>\d+)\s\"(?<http_referer>.*)\"\s\"(?<user_agent>.*)\")/'
+        filter:
+          add_aodh_wsgi_record_fields:
+            tag: openstack.aodh
+            type: record_transformer
+            enable_ruby: true
+            record:
+              - name: Severity
+                value: 6
+              - name: severity_label
+                value: INFO
+              - name: programname
+                value: aodh-wsgi
+              - name: http_response_time
+                value: ${ record['http_response_time'].to_i/100000.to_f }
+        match:
+          send_to_default:
+            tag: openstack.aodh
+            type: copy
+            store:
+              - type: relabel
+                label: default_output
+              - type: rewrite_tag_filter
+                rule:
+                  - name: severity_label
+                    regexp: '.'
+                    result: metric.aodh_log_messages
+              - type: rewrite_tag_filter
+                rule:
+                  - name: http_status
+                    regexp: '.'
+                    result: metric.aodh_openstack_http_response
+          push_to_metric:
+            tag: 'metric.**'
+            type: relabel
+            label: default_metric
+{%- endif %}
+      openstack_aodh:
+        filter:
+          set_programname:
+            tag: openstack.aodh.*
+            type: record_transformer
+            enable_ruby: true
+            record:
+              - name: programname
+                value: aodh-${ tag_parts[2] }
+          set_log_record_fields:
+            tag: openstack.aodh
+            type: record_transformer
+            enable_ruby: true
+            record:
+              - name: Severity
+                value: ${ {'TRACE'=>7,'DEBUG'=>7,'INFO'=>6,'AUDIT'=>6,'WARNING'=>4,'ERROR'=>3,'CRITICAL'=>2}[record['level']].to_i }
+              - name: severity_label
+                value: ${ record['level'] }
+              - name: Payload
+                value: ${ record['message'] }
+              - name: python_module
+                value: ${ record['name'] }
+              - name: programname
+                value: '${ record["programname"] ? record["programname"] : "aodh" }'
+          parse_http_stats:
+            tag: openstack.aodh
+            type: parser
+            key_name: Payload
+            reserve_data: true
+            emit_invalid_record_to_error: false
+            parser:
+              type: regexp
+              # Parse openstack http stats: https://regex101.com/r/Tf0XUK/1/
+              format: '\"(?<http_method>GET|POST|OPTIONS|DELETE|PUT|HEAD|TRACE|CONNECT|PATCH)\s(?<http_url>\S+)\s(?<http_version>[.\/\dHTFSP]+)\"\sstatus:\s(?<http_status>\d{3})\slen:\s(?<http_response_size>\d+)\stime:\s(?<http_response_time>\d+\.\d+)'
+              types: http_response_time:float
+        match:
+          unify_tag:
+            tag: openstack.aodh.*
+            type: rewrite_tag_filter
+            rule:
+              - name: level
+                regexp: '.*'
+                result: openstack.aodh
+          send_to_default:
+            tag: openstack.aodh
+            type: copy
+            store:
+              - type: relabel
+                label: default_output
+              - type: rewrite_tag_filter
+                rule:
+                  - name: severity_label
+                    regexp: '.'
+                    result: metric.aodh_log_messages
+              - type: rewrite_tag_filter
+                rule:
+                  - name: http_status
+                    regexp: '.'
+                    result: metric.aodh_openstack_http_response
+          push_to_metric:
+            tag: 'metric.**'
+            type: relabel
+            label: default_metric
+      default_metric:
+        filter:
+          aodh_logs_per_severity:
+            tag: metric.aodh_log_messages
+            require:
+              - add_general_fields
+            type: prometheus
+            metric:
+              - name: log_messages
+                type: counter
+                desc: Total number of log lines by severity
+            label:
+              - name: service
+                value: aodh
+              - name: level
+                value: ${severity_label}
+              - name: host
+                value: ${Hostname}
+          aodh_openstack_http_response_times:
+            tag: metric.aodh_openstack_http_response
+            require:
+              - add_general_fields
+            type: prometheus
+            metric:
+              - name: openstack_http_response_times
+                type: summary
+                desc: Total number of requests per method and status
+                key: http_response_time
+            label:
+              - name: http_method
+                value: ${http_method}
+              - name: http_status
+                value: ${http_status}
+              - name: service
+                value: aodh
+              - name: host
+                value: ${Hostname}
+{% endif %}
