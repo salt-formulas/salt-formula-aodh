@@ -5,7 +5,7 @@ aodh
 
 Aodh is an alarming service for OpenStack. It used to be a part of Ceilometer, but starting from Mitaka it
 is a separate project. Aodh supports several types of alarms like threshold, event, composite and gnocchi-specific.
-In cluster mode, coordination is enabled via tooz with Redis backend.  
+In cluster mode, coordination is enabled via tooz with Redis backend.
 MySQL is used as a data backend for alarms and alarm history.
 
 Sample pillars
@@ -20,7 +20,7 @@ Cluster aodh service
         enabled: true
         version: mitaka
         ttl: 86400
-        cluster: true 
+        cluster: true
       database:
         engine: "mysql+pymysql"
         host: 10.0.106.20
@@ -33,11 +33,11 @@ Cluster aodh service
         port: 8042
       identity:
         engine: keystone
-        host: 10.0.106.20 
+        host: 10.0.106.20
         port: 35357
         tenant: service
         user: aodh
-        password: password 
+        password: password
       message_queue:
         engine: rabbitmq
         port: 5672
@@ -53,6 +53,31 @@ Cluster aodh service
         - host: 10.10.10.12
             port: 11211
 
+
+Enhanced logging with logging.conf
+----------------------------------
+
+By default logging.conf is disabled.
+
+That is possible to enable per-binary logging.conf with new variables:
+  * openstack_log_appender - set it to true to enable log_config_append for all OpenStack services;
+  * openstack_fluentd_handler_enabled - set to true to enable FluentHandler for all Openstack services.
+
+Only WatchedFileHandler and FluentHandler are available.
+
+Also it is possible to configure this with pillar:
+
+.. code-block:: yaml
+
+  aodh:
+    server:
+      logging:
+        log_appender: true
+        log_handlers:
+          watchedfile:
+            enabled: true
+          fluentd:
+            enabled: true
 
 Development and testing
 =======================

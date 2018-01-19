@@ -4,11 +4,27 @@
         'pkgs': ['aodh-api', 'aodh-evaluator', 'aodh-notifier', 'aodh-listener', 'python-aodhclient'],
         'services': ['aodh-evaluator', 'aodh-notifier', 'aodh-listener'],
         'webserved': ['aodh-api'],
+        'logging': {
+          'log_appender': false,
+          'log_handlers': {
+            'watchedfile': {
+              'enabled': true
+            },
+          }
+        },
     },
     'RedHat': {
         'pkgs':['openstack-aodh-api', 'openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener', 'python-aodhclient'],
         'services': ['openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener'],
         'webserved': ['openstack-aodh-api'],
+        'logging': {
+          'log_appender': false,
+          'log_handlers': {
+            'watchedfile': {
+              'enabled': true
+            },
+          }
+        },
     },
 }, merge=salt['pillar.get']('aodh:server')) %}
 
