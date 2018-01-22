@@ -17,11 +17,11 @@ install:
   - bundle install
 
 env:
-  # - PLATFORM=trevorj/salty-whales:trusty SUITE=server-cluster
-  # - PLATFORM=trevorj/salty-whales:trusty SUITE=server-single
+  # - PLATFORM=trevorj/salty-whales:trusty-2017.7 SUITE=server-cluster
+  # - PLATFORM=trevorj/salty-whales:trusty-2017.7 SUITE=server-single
   # Missing Trusty packages for aodh
-  - PLATFORM=trevorj/salty-whales:xenial SUITE=server-cluster
-  - PLATFORM=trevorj/salty-whales:xenial SUITE=server-single
+  - PLATFORM=trevorj/salty-whales:xenial-2017.7 SUITE=server-cluster
+  - PLATFORM=trevorj/salty-whales:xenial-2017.7 SUITE=server-single
 
 before_script:
   - set -o pipefail
