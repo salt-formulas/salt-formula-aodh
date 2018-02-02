@@ -18,7 +18,7 @@ parameters:
         port: 3306
         name: aodh
         user: aodh
-        password: ${_param:mysql_nova_password}
+        password: ${_param:mysql_aodh_password}
       bind:
         host: ${_param:single_address}
         port: 8042
