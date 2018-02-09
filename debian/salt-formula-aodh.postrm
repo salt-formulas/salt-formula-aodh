@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+dpkg-maintscript-helper symlink_to_dir \
+        /usr/share/salt-formulas/env/aodh/files/pike /usr/share/salt-formulas/env/aodh/files/ocata salt-formula-aodh -- "$@"
+
+#DEBHELPER#
+
+exit 0
