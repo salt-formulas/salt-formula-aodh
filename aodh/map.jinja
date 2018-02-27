@@ -3,6 +3,7 @@
     'Debian': {
         'pkgs': ['aodh-api', 'aodh-evaluator', 'aodh-notifier', 'aodh-listener', 'python-aodhclient'],
         'services': ['aodh-evaluator', 'aodh-notifier', 'aodh-listener'],
+        'cacert_file': '/etc/ssl/certs/ca-certificates.crt',
         'webserved': ['aodh-api'],
         'logging': {
           'log_appender': false,
@@ -16,6 +17,7 @@
     'RedHat': {
         'pkgs':['openstack-aodh-api', 'openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener', 'python-aodhclient'],
         'services': ['openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener'],
+        'cacert_file': '/etc/pki/tls/certs/ca-bundle.crt',
         'webserved': ['openstack-aodh-api'],
         'logging': {
           'log_appender': false,

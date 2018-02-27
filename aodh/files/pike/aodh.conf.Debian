@@ -335,16 +335,16 @@ default_log_levels = amqp=WARN,amqplib=WARN,boto=WARN,iso8601=WARN,keystonemiddl
 # A URL representing the messaging driver to use and its full configuration.
 # (string value)
 #transport_url = <None>
+{%- set rabbit_port = server.message_queue.get('port', 5671 if server.message_queue.get('ssl',{}).get('enabled', False)  else 5672) %}
 {%- if server.message_queue.members is defined %}
 transport_url = rabbit://{% for member in server.message_queue.members -%}
-                             {{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ member.host }}:{{ member.get('port', 5672) }}
+                             {{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ member.host }}:{{  member.get('port', rabbit_port) }}
                              {%- if not loop.last -%},{%- endif -%}
                          {%- endfor -%}
                              /{{ server.message_queue.virtual_host }}
 {%- else %}
-transport_url = rabbit://{{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ server.message_queue.host }}:{{ server.message_queue.port }}/{{ server.message_queue.virtual_host }}
+transport_url = rabbit://{{ server.message_queue.user }}:{{ server.message_queue.password }}@{{ server.message_queue.host }}:{{ rabbit_port }}/{{ server.message_queue.virtual_host }}
 {%- endif %}
-
 
 # DEPRECATED: The messaging driver to use, defaults to rabbit. Other drivers
 # include amqp and zmq. (string value)
@@ -521,7 +521,7 @@ backend = sqlalchemy
 # Deprecated group/name - [DEFAULT]/sql_connection
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
-connection = {{ server.database.engine }}://{{ server.database.user }}:{{ server.database.password }}@{{ server.database.host }}/{{ server.database.name }}
+connection = {{ server.database.engine }}://{{ server.database.user }}:{{ server.database.password }}@{{ server.database.host }}/{{ server.database.name }}{%- if server.database.get('ssl',{}).get('enabled',False) %}?ssl_ca={{ server.database.ssl.get('cacert_file', server.cacert_file) }}{% endif %}
 
 # The SQLAlchemy connection string to use to connect to the slave database.
 # (string value)
@@ -662,9 +662,13 @@ project_domain_id = {{ server.identity.get('domain', 'default') }}
 project_name = {{ server.identity.tenant }}
 username = {{ server.identity.user }}
 password = {{ server.identity.password }}
-auth_uri = http://{{ server.identity.host }}:5000
-auth_url = http://{{ server.identity.host }}:35357
+auth_uri = {{ server.identity.get('protocol', 'http') }}://{{ server.identity.host }}:5000
+auth_url = {{ server.identity.get('protocol', 'http') }}://{{ server.identity.host }}:35357
 interface = {{ server.identity.get('endpoint_type', 'internal') }}
+
+{%- if server.identity.get('protocol', 'http') == 'https' %}
+cafile={{ server.identity.get('cacert_file', server.cacert_file) }}
+{%- endif %}
 
 {%- if server.cache is defined %}
 memcached_servers = {%- for member in server.cache.members %}{{ member.host }}:{{ member.get('port', '11211') }}{% if not loop.last %},{% endif %}{%- endfor %}
@@ -1680,7 +1684,7 @@ auth_type = password
 
 # Authentication URL (string value)
 #auth_url = <None>
-auth_url = http://{{ server.identity.host }}:5000
+auth_url = {{ server.identity.get('protocol', 'http') }}://{{ server.identity.host }}:5000
 
 # Domain ID to scope to (string value)
 #domain_id = <None>
