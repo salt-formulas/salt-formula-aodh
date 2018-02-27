@@ -16,6 +16,13 @@ aodh:
       user: ceilometer
       password: password
       endpoint_type: internalURL
+    logging:
+      log_appender: false
+      log_handlers:
+        watchedfile:
+          enabled: true
+        fluentd:
+          enabled: false
     message_queue:
       engine: rabbitmq
       host: 127.0.0.1
