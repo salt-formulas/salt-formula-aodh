@@ -1,3 +1,9 @@
+salt-formula-aodh (0.2) xenial; urgency=medium
+
+  * Add ssl functionality
+
+ -- devops <devops@mirantis.com>  Mon, 05 Mar 2018 12:22:35 +0200
+
 salt-formula-aodh (0.1ubuntu1) xenial; urgency=medium
 
   * Add preinst, postinst, postrm procedures to process files/pike symlink
