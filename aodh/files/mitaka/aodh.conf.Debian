@@ -21,6 +21,9 @@
 
 # The topic that aodh uses for event alarm evaluation. (string value)
 #event_alarm_topic = alarm.all
+{%- if server.event_alarm_topic is defined %}
+event_alarm_topic = {{ server.event_alarm_topic }}
+{%- endif %}
 
 # The protocol used to communicate between evaluator and notifier
 # services. (string value)
