@@ -1,0 +1,248 @@
+{%- from "aodh/map.jinja" import server with context -%}
+[DEFAULT]
+
+#
+# From aodh
+#
+
+# Record alarm change events. (boolean value)
+#record_history = true
+
+# TTL of event alarm caches, in seconds. Set to 0 to disable caching. (integer
+# value)
+#event_alarm_cache_ttl = 60
+
+# The number of seconds to extend the evaluation windows to compensate the
+# reporting/ingestion lag. (integer value)
+# Minimum value: 0
+#additional_ingestion_lag = 0
+
+# SSL Client certificate file for REST notifier. (string value)
+#rest_notifier_certificate_file =
+
+# SSL Client private key file for REST notifier. (string value)
+#rest_notifier_certificate_key =
+
+# SSL CA_BUNDLE certificate for REST notifier (string value)
+#rest_notifier_ca_bundle_certificate_path = <None>
+
+# Whether to verify the SSL Server certificate when calling alarm action.
+# (boolean value)
+#rest_notifier_ssl_verify = true
+
+# Number of retries for REST notifier (integer value)
+#rest_notifier_max_retries = 0
+
+# The topic that aodh uses for alarm notifier messages. (string value)
+#notifier_topic = alarming
+
+# Timeout seconds for HTTP requests. Set it to None to disable timeout.
+# (integer value)
+#http_timeout = 600
+
+# Period of evaluation cycle, should be >= than configured pipeline interval
+# for collection of underlying meters. (integer value)
+#evaluation_interval = 60
+
+{%- set _data = server.message_queue %}
+{%- include "oslo_templates/files/queens/oslo/messaging/_default.conf" %}
+
+{%- if server.logging is defined %}
+{%- set _data = server.logging %}
+{%- include "oslo_templates/files/queens/oslo/_log.conf" %}
+{%- endif %}
+
+[api]
+
+#
+# From aodh
+#
+
+port = {{ server.bind.port }}
+
+host = {{ server.bind.host }}
+
+# Configuration file for WSGI definition of API. (string value)
+#paste_config = /usr/src/git/aodh/aodh/api/api-paste.ini
+
+# Authentication mode to use. Unset to disable authentication (string value)
+#auth_mode = keystone
+
+# Project name of resources creator in Gnocchi. (For example the Ceilometer
+# project name (string value)
+#gnocchi_external_project_owner = service
+
+# Maximum number of alarms defined for a user. (integer value)
+#user_alarm_quota = <None>
+
+# Maximum number of alarms defined for a project. (integer value)
+#project_alarm_quota = <None>
+
+# Maximum count of actions for each state of an alarm, non-positive number
+# means no limit. (integer value)
+#alarm_max_actions = -1
+
+
+[coordination]
+
+#
+# From aodh
+#
+
+# The backend URL to use for distributed coordination. If left empty, alarm
+# evaluation won't do workload partitioning and will only function correctly if
+# a single instance of the service is running. (string value)
+#backend_url = <None>
+{%- if server.coordination_backend is defined %}
+backend_url = {{ server.coordination_backend.url }}
+{%-  endif %}
+
+# Number of seconds between heartbeats for distributed coordination. (floating
+# point value)
+#heartbeat = 1.0
+
+# Number of seconds between checks to see if group membership has changed
+# (floating point value)
+#check_watchers = 10.0
+
+# Retry backoff factor when retrying to connect with coordination backend
+# (integer value)
+#retry_backoff = 1
+
+# Maximum number of seconds between retry to join partitioning group (integer
+# value)
+#max_retry_interval = 30
+
+
+[database]
+
+#
+# From aodh
+#
+
+# Number of seconds that alarm histories are kept in the database for (<= 0
+# means forever). (integer value)
+#alarm_history_time_to_live = -1
+alarm_history_time_to_live = {{ server.ttl }}
+
+{%- set _data = server.database %}
+{%- if _data.ssl is defined and 'cacert_file' not in _data.get('ssl', {}).keys() %}{% do _data['ssl'].update({'cacert_file': server.cacert_file}) %}{% endif %}
+{%- include "oslo_templates/files/queens/oslo/_database.conf" %}
+
+
+[evaluator]
+
+#
+# From aodh
+#
+
+# Number of workers for evaluator service. default value is 1. (integer value)
+# Minimum value: 1
+#workers = 1
+
+
+[listener]
+
+#
+# From aodh
+#
+
+# Number of workers for listener service. default value is 1. (integer value)
+# Minimum value: 1
+#workers = 1
+
+# The topic that aodh uses for event alarm evaluation. (string value)
+#event_alarm_topic = alarm.all
+
+# Number of notification messages to wait before dispatching them. (integer
+# value)
+#batch_size = 1
+
+# Number of seconds to wait before dispatching samples when batch_size is not
+# reached (None means indefinitely). (integer value)
+#batch_timeout = <None>
+
+
+[notifier]
+
+#
+# From aodh
+#
+
+# Number of workers for notifier service. default value is 1. (integer value)
+# Minimum value: 1
+#workers = 1
+
+# Number of notification messages to wait before dispatching them. (integer
+# value)
+#batch_size = 1
+
+# Number of seconds to wait before dispatching samples when batch_size is not
+# reached (None means indefinitely). (integer value)
+#batch_timeout = <None>
+
+
+[service_credentials]
+
+#
+# From aodh
+#
+
+# Region name to use for OpenStack service endpoints. (string value)
+# Deprecated group/name - [service_credentials]/os_region_name
+#region_name = <None>
+
+# Type of endpoint in Identity service catalog to use for communication with
+# OpenStack services. (string value)
+# Possible values:
+# public - <No description provided>
+# internal - <No description provided>
+# admin - <No description provided>
+# auth - <No description provided>
+# publicURL - <No description provided>
+# internalURL - <No description provided>
+# adminURL - <No description provided>
+# Deprecated group/name - [service_credentials]/os_endpoint_type
+#interface = public
+
+#
+# From aodh-auth
+#
+
+{%- set _data = server.identity %}
+{%- set auth_type = _data.get('auth_type', 'password') %}
+{%- include "oslo_templates/files/queens/keystoneauth/_type_" + auth_type + ".conf" %}
+
+[service_types]
+
+#
+# From aodh
+#
+
+# Message queue service type. (string value)
+#zaqar = messaging
+
+[cors]
+{%- if server.cors is defined %}
+{%- set _data = server.cors %}
+{%- include "oslo_templates/files/queens/oslo/_cors.conf" %}
+{%- endif %}
+
+[oslo_middleware]
+{%- set _data = server %}
+{%- include "oslo_templates/files/queens/oslo/_middleware.conf" %}
+
+[healthcheck]
+{%- include "oslo_templates/files/queens/oslo/_healthcheck.conf" %}
+
+[oslo_policy]
+{%- if server.policy is defined %}
+{%- set _data = server.policy %}
+{%- include "oslo_templates/files/queens/oslo/_policy.conf" %}
+{%- endif %}
+
+[keystone_authtoken]
+{%- set _data = server.identity %}
+{%- set auth_type = _data.get('auth_type', 'password') %}
+{%- include "oslo_templates/files/queens/keystonemiddleware/_auth_token.conf" %}
+{%- include "oslo_templates/files/queens/keystoneauth/_type_" + auth_type + ".conf" %}

@@ -26,6 +26,7 @@ parameters:
       identity:
         engine: keystone
         host: ${_param:single_address}
+        region: RegionOne
         port: 35357
         tenant: service
         user: aodh

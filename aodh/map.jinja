@@ -5,6 +5,12 @@
         'services': ['aodh-evaluator', 'aodh-notifier', 'aodh-listener'],
         'cacert_file': '/etc/ssl/certs/ca-certificates.crt',
         'webserved': ['aodh-api'],
+        'notification': {
+          'topics': 'notifications'
+        },
+        'policy': {
+          'policy_file': '/etc/aodh/policy.json'
+        },
         'logging': {
           'log_appender': false,
           'log_handlers': {
@@ -19,6 +25,12 @@
         'services': ['openstack-aodh-evaluator', 'openstack-aodh-notifier', 'openstack-aodh-listener'],
         'cacert_file': '/etc/pki/tls/certs/ca-bundle.crt',
         'webserved': ['openstack-aodh-api'],
+        'notification': {
+          'topics': 'notifications'
+        },
+        'policy': {
+          'policy_file': '/etc/aodh/policy.json'
+        },
         'logging': {
           'log_appender': false,
           'log_handlers': {

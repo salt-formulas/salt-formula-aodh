@@ -29,6 +29,7 @@ parameters:
       identity:
         engine: keystone
         host: ${_param:cluster_vip_address}
+        region: RegionOne
         port: 35357
         tenant: service
         user: aodh
