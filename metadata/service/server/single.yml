@@ -14,7 +14,7 @@ parameters:
       version: ${_param:aodh_version}
       ttl: 86400
       database:
-        engine: "mysql+pymysql"
+        engine: "mysql"
         host: ${_param:single_address}
         port: 3306
         name: aodh

@@ -393,7 +393,8 @@ alarm_history_time_to_live = {{ server.ttl }}
 # Deprecated group/name - [DEFAULT]/sql_connection
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
-connection = {{ server.database.engine }}://{{ server.database.user }}:{{ server.database.password }}@{{ server.database.host }}/{{ server.database.name }}
+{%- set _db_engine = server.database.engine if '+' in server.database.engine else server.database.engine ~ '+pymysql' %}
+connection = {{ _db_engine }}://{{ server.database.user }}:{{ server.database.password }}@{{ server.database.host }}/{{ server.database.name }}
 
 # The SQLAlchemy connection string to use to connect to the slave
 # database. (string value)

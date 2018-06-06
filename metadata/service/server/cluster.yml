@@ -17,7 +17,7 @@ parameters:
       debug: false
       verbose: true
       database:
-        engine: "mysql+pymysql"
+        engine: "mysql"
         host: ${_param:cluster_vip_address}
         port: 3306
         name: aodh

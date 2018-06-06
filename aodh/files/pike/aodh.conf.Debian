@@ -521,7 +521,8 @@ backend = sqlalchemy
 # Deprecated group/name - [DEFAULT]/sql_connection
 # Deprecated group/name - [DATABASE]/sql_connection
 # Deprecated group/name - [sql]/connection
-connection = {{ server.database.engine }}://{{ server.database.user }}:{{ server.database.password }}@{{ server.database.host }}/{{ server.database.name }}{%- if server.database.get('ssl',{}).get('enabled',False) %}?ssl_ca={{ server.database.ssl.get('cacert_file', server.cacert_file) }}{% endif %}
+{%- set _db_engine = server.database.engine if '+' in server.database.engine else server.database.engine ~ '+pymysql' %}
+connection = {{ _db_engine }}://{{ server.database.user }}:{{ server.database.password }}@{{ server.database.host }}/{{ server.database.name }}{%- if server.database.get('ssl',{}).get('enabled',False) %}?ssl_ca={{ server.database.ssl.get('cacert_file', server.cacert_file) }}{% endif %}
 
 # The SQLAlchemy connection string to use to connect to the slave database.
 # (string value)
