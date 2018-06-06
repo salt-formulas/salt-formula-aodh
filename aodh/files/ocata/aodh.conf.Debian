@@ -848,6 +848,9 @@ token_cache_time = -1
 # The topic that aodh uses for event alarm evaluation. (string value)
 # Deprecated group/name - [DEFAULT]/event_alarm_topic
 #event_alarm_topic = alarm.all
+{%- if server.event_alarm_topic is defined %}
+event_alarm_topic = {{ server.event_alarm_topic }}
+{%- endif %}
 
 # Number of notification messages to wait before dispatching them. (integer
 # value)

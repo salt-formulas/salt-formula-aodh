@@ -5,6 +5,7 @@ aodh:
     version: mitaka
     cluster: true
     ttl: 86400
+    event_alarm_topic: alarm.all
     bind:
       host: 127.0.0.1
       port: 8042
