@@ -210,6 +210,7 @@ alarm_history_time_to_live = {{ server.ttl }}
 #
 
 {%- set _data = server.identity %}
+{%- if 'cacert_file' not in _data.keys() %}{% do _data.update({'cacert_file': server.cacert_file}) %}{% endif %}
 {%- set auth_type = _data.get('auth_type', 'password') %}
 {%- include "oslo_templates/files/queens/keystoneauth/_type_" + auth_type + ".conf" %}
 
