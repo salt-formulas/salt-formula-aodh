@@ -53,6 +53,23 @@ Cluster aodh service
         - host: 10.10.10.12
             port: 11211
 
+Setting alarm history cleanup
+
+In order to allow alarm cleanup from one node of the cluster,
+server:role field should be set to primary and all others to
+secondaey to avoid race conditions. On the example below
+expirer is set to run every day at 2:00 AM. By default
+it will be run every hour.
+
+.. code-block:: yaml
+
+    aodh:
+      server:
+        role: primary
+        expirer:
+          cron:
+            minute: 0
+            hour: 2
 
 Enhanced logging with logging.conf
 ----------------------------------

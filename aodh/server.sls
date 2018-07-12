@@ -101,6 +101,29 @@ aodh_syncdb:
     - file: /etc/aodh/aodh.conf
     - pkg: aodh_server_packages
 
+{%- if server.get('role', 'secondary') == 'primary' %}
+{%- set cron = server.expirer.cron %}
+aodh_expirer_cron:
+  cron.present:
+    - name: /usr/bin/aodh-expirer
+    - user: aodh
+    - minute: '{{ cron.minute }}'
+    {%- if cron.hour is defined %}
+    - hour: '{{ cron.hour }}'
+    {%- endif %}
+    {%- if cron.daymonth is defined %}
+    - daymonth: '{{ cron.daymonth }}'
+    {%- endif %}
+    {%- if cron.month is defined %}
+    - month: '{{ cron.month }}'
+    {%- endif %}
+    {%- if cron.dayweek is defined %}
+    - dayweek: '{{ cron.dayweek }}'
+    {%- endif %}
+    - require:
+      - file: /etc/aodh/aodh.conf
+{%- endif %}
+
 # for Newton and newer
 {%- if server.version not in ['mitaka'] %}
 

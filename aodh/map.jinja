@@ -1,5 +1,12 @@
 
 {% set server = salt['grains.filter_by']({
+    'default': {
+        'expirer': {
+          'cron': {
+            'minute': 0
+          },
+        },
+    },
     'Debian': {
         'pkgs': ['aodh-api', 'aodh-evaluator', 'aodh-notifier', 'aodh-listener', 'python-aodhclient'],
         'services': ['aodh-evaluator', 'aodh-notifier', 'aodh-listener'],
@@ -40,7 +47,7 @@
           }
         },
     },
-}, merge=salt['pillar.get']('aodh:server')) %}
+}, merge=salt['pillar.get']('aodh:server'), base='default') %}
 
 {%- if salt['pillar.get']('aodh:server:version', 'mitaka') in ['mitaka'] %}
     {%- do server.update({'services': server.services + server.webserved}) %}
