@@ -40,7 +40,7 @@ aodh_fluentd_logger_package:
 aodh_general_logging_conf:
   file.managed:
     - name: /etc/aodh/logging.conf
-    - source: salt://aodh/files/logging.conf
+    - source: salt://oslo_templates/files/logging/_logging.conf
     - template: jinja
     - user: aodh
     - group: aodh
@@ -51,7 +51,7 @@ aodh_general_logging_conf:
 {%- endif %}
     - defaults:
         service_name: aodh
-        values: {{ server }}
+        _data: {{ server.logging }}
     - watch_in:
       - service: aodh_server_services
 {%- if server.version not in ['mitaka'] %}
@@ -72,7 +72,7 @@ aodh_general_logging_conf:
 {{ service_name }}_logging_conf:
   file.managed:
     - name: /etc/aodh/logging/logging-{{ service_name }}.conf
-    - source: salt://aodh/files/logging.conf
+    - source: salt://oslo_templates/files/logging/_logging.conf
     - template: jinja
     - user: aodh
     - group: aodh
@@ -84,7 +84,7 @@ aodh_general_logging_conf:
     - makedirs: True
     - defaults:
         service_name: {{ service_name }}
-        values: {{ server }}
+        _data: {{ server.logging }}
     - watch_in:
       - service: aodh_server_services
 {% endfor %}
