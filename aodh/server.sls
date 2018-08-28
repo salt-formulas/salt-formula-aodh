@@ -11,6 +11,8 @@ aodh_server_packages:
   file.managed:
   - source: salt://aodh/files/{{ server.version }}/aodh.conf.{{ grains.os_family }}
   - template: jinja
+  - mode: 0640
+  - group: aodh
   - require:
     - pkg: aodh_server_packages
 
@@ -42,7 +44,8 @@ aodh_general_logging_conf:
     - name: /etc/aodh/logging.conf
     - source: salt://oslo_templates/files/logging/_logging.conf
     - template: jinja
-    - user: aodh
+    - mode: 0640
+    - user: root
     - group: aodh
     - require:
       - pkg: aodh_server_packages
@@ -74,7 +77,8 @@ aodh_general_logging_conf:
     - name: /etc/aodh/logging/logging-{{ service_name }}.conf
     - source: salt://oslo_templates/files/logging/_logging.conf
     - template: jinja
-    - user: aodh
+    - mode: 0640
+    - user: root
     - group: aodh
     - require:
       - pkg: aodh_server_packages
