@@ -99,6 +99,29 @@ Also it is possible to configure this with pillar:
           ossyslog:
             enabled: true
 
+Enable x509 and ssl communication between Aodh and Galera cluster.
+---------------------
+By default communication between Aodh and Galera is unsecure.
+
+aodh:
+  server:
+    database:
+      x509:
+        enabled: True
+
+You able to set custom certificates in pillar:
+
+aodh:
+  server:
+    database:
+      x509:
+        cacert: (certificate content)
+        cert: (certificate content)
+        key: (certificate content)
+
+You can read more about it here:
+    https://docs.openstack.org/security-guide/databases/database-access-control.html
+
 Development and testing
 =======================
 

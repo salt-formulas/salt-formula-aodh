@@ -1,11 +1,18 @@
 {%- from "aodh/map.jinja" import server with context %}
+
 {%- if server.enabled %}
+
 # Exclude unsupported openstack versions
 {%- if server.version not in ['liberty', 'juno', 'kilo'] %}
+
+include:
+  - aodh._ssl.mysql
 
 aodh_server_packages:
   pkg.installed:
   - names: {{ server.pkgs }}
+  - require_in:
+    - sls: aodh._ssl.mysql
 
 /etc/aodh/aodh.conf:
   file.managed:
@@ -15,6 +22,7 @@ aodh_server_packages:
   - group: aodh
   - require:
     - pkg: aodh_server_packages
+    - sls: aodh._ssl.mysql
 
 {% for service_name in server.services %}
 {{ service_name }}_default:
@@ -183,32 +191,6 @@ rabbitmq_ca_aodh_server:
      - file: /etc/aodh/aodh.conf
    - watch_in:
       - aodh_server_services
-{%- endif %}
-{%- endif %}
-
-
-{%- if server.database.get('ssl',{}).get('enabled', False) %}
-mysql_ca_aodh_server:
-{%- if server.database.ssl.cacert is defined %}
-  file.managed:
-    - name: {{ server.database.ssl.cacert_file }}
-    - contents_pillar: aodh:server:database:ssl:cacert
-    - mode: 0444
-    - makedirs: true
-    - require_in:
-      - file: /etc/aodh/aodh.conf
-    - watch_in:
-      - aodh_server_services
-      - aodh_apache_restart
-
-{%- else %}
-  file.exists:
-   - name: {{ server.database.ssl.get('cacert_file', server.cacert_file) }}
-   - require_in:
-     - file: /etc/aodh/aodh.conf
-   - watch_in:
-     - aodh_server_services
-     - aodh_apache_restart
 {%- endif %}
 {%- endif %}
 
