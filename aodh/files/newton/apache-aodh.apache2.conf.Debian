@@ -2,7 +2,7 @@
 Listen {{ server.bind.host }}:{{ server.bind.port }}
 
 <VirtualHost *:{{ server.bind.port }}>
-    WSGIDaemonProcess aodh-api processes=2 threads=10 user=aodh display-name=%{GROUP}
+    WSGIDaemonProcess aodh-api processes=2 threads=10 user=aodh group=aodh display-name=%{GROUP}
     WSGIProcessGroup aodh-api
     WSGIScriptAlias / /usr/share/aodh-common/app.wsgi
     WSGIApplicationGroup %{GLOBAL}
