@@ -20,12 +20,6 @@ install:
   - bundle install
 
 env:
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 OS_VERSION=ocata SUITE=server-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 OS_VERSION=ocata SUITE=server-single
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 OS_VERSION=pike SUITE=server-cluster
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 OS_VERSION=pike SUITE=server-single
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 OS_VERSION=pike SUITE=server-cluster-ssl
-  - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2016.3 OS_VERSION=pike SUITE=server-single-ssl
   - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 OS_VERSION=ocata SUITE=server-cluster
   - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 OS_VERSION=ocata SUITE=server-single
   - PLATFORM=epcim/salt:saltstack-ubuntu-xenial-salt-2017.7 OS_VERSION=pike SUITE=server-cluster
