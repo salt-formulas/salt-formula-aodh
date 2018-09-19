@@ -7,12 +7,14 @@
 
 include:
   - aodh._ssl.mysql
+  - aodh._ssl.rabbitmq
 
 aodh_server_packages:
   pkg.installed:
   - names: {{ server.pkgs }}
   - require_in:
     - sls: aodh._ssl.mysql
+    - sls: aodh._ssl.rabbitmq
 
 /etc/aodh/aodh.conf:
   file.managed:
@@ -23,6 +25,7 @@ aodh_server_packages:
   - require:
     - pkg: aodh_server_packages
     - sls: aodh._ssl.mysql
+    - sls: aodh._ssl.rabbitmq
 
 {% for service_name in server.services %}
 {{ service_name }}_default:
