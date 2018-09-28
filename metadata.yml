@@ -1,3 +1,6 @@
 name: "aodh"
 version: "2016.4.1"
 source: "https://github.com/tcpcloud/salt-formula-aodh"
+dependencies:
+  - name: apache
+    source: "https://github.com/salt-formulas/salt-formula-apache"

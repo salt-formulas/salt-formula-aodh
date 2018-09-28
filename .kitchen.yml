@@ -18,6 +18,9 @@ provisioner:
     - name: linux
       repo: git
       source: https://github.com/salt-formulas/salt-formula-linux
+    - name: apache
+      repo: git
+      source: https://github.com/salt-formulas/salt-formula-apache
   state_top:
     base:
       "*":

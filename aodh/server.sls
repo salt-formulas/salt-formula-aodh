@@ -8,6 +8,7 @@
 include:
   - aodh._ssl.mysql
   - aodh._ssl.rabbitmq
+  - apache
 
 aodh_server_packages:
   pkg.installed:
@@ -142,6 +143,26 @@ aodh_expirer_cron:
 # for Newton and newer
 {%- if server.version not in ['mitaka'] %}
 
+{%- if pillar.get('apache', {}).get('server', {}).get('site', {}).aodh is defined %}
+
+apache_enable_aodh_wsgi:
+  apache_site.enabled:
+  - name: wsgi_aodh
+  {%- if grains.get('noservices') %}
+  - onlyif: /bin/false
+  {%- endif %}
+  - require:
+    - pkg: aodh_server_packages
+    - file: aodh_cleanup_configs
+
+aodh_cleanup_configs:
+  file.absent:
+    - names:
+      - '/etc/apache2/sites-available/aodh-api.conf'
+      - '/etc/apache2/sites-enabled/aodh-api.conf'
+
+{%- else %}
+
 aodh_api_apache_config:
   file.managed:
   {%- if server.version == 'newton' %}
@@ -164,6 +185,8 @@ aodh_api_config:
      - target: /etc/apache2/sites-available/aodh-api.conf
      {%- endif %}
 
+{%- endif %}
+
 aodh_apache_restart:
   service.running:
   - enable: true
@@ -173,7 +196,12 @@ aodh_apache_restart:
   {%- endif %}
   - watch:
     - file: /etc/aodh/aodh.conf
+    {%- if pillar.get('apache', {}).get('server', {}).get('site', {}).aodh is defined %}
+    - apache_enable_aodh_wsgi
+    {%- else %}
     - file: aodh_api_apache_config
+    {%- endif %}
+
 
 {%- if server.message_queue.get('ssl',{}).get('enabled', False) %}
 rabbitmq_ca_aodh_server:

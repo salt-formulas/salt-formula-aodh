@@ -40,3 +40,18 @@ aodh:
       password: test
     notifications:
       store_events: default
+apache:
+  server:
+    enabled: true
+    default_mpm: event
+    mpm:
+      prefork:
+        enabled: true
+        servers:
+          start: 5
+          spare:
+            min: 2
+            max: 10
+        max_requests: 0
+        max_clients: 20
+        limit: 20

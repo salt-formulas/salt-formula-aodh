@@ -44,3 +44,42 @@ aodh:
       password: test
     notifications:
       store_events: default
+apache:
+  server:
+    enabled: true
+    default_mpm: event
+    mpm:
+      prefork:
+        enabled: true
+        servers:
+          start: 5
+          spare:
+            min: 2
+            max: 10
+        max_requests: 0
+        max_clients: 20
+        limit: 20
+    site:
+      aodh:
+        enabled: false
+        available: true
+        type: wsgi
+        name: aodh
+        host:
+          name: 127.0.0.1
+          address: 127.0.0.1
+          port: 8042
+        log:
+          custom:
+            format: >-
+              %v:%p %{X-Forwarded-For}i %h %l %u %t \"%r\" %>s %D %O \"%{Referer}i\" \"%{User-Agent}i\"
+        wsgi:
+          daemon_process: aodh-api
+          processes: ${_param:aodh_api_workers}
+          threads: 1
+          user: aodh
+          group: aodh
+          display_name: '%{GROUP}'
+          script_alias: '/ /usr/share/aodh/app.wsgi'
+          application_group: '%{GLOBAL}'
+          authorization: 'On'
