@@ -202,29 +202,6 @@ aodh_apache_restart:
     - file: aodh_api_apache_config
     {%- endif %}
 
-
-{%- if server.message_queue.get('ssl',{}).get('enabled', False) %}
-rabbitmq_ca_aodh_server:
-{%- if server.message_queue.ssl.cacert is defined %}
-  file.managed:
-    - name: {{ server.message_queue.ssl.cacert_file }}
-    - contents_pillar: aodh:server:message_queue:ssl:cacert
-    - mode: 0444
-    - makedirs: true
-    - require_in:
-      - file: /etc/aodh/aodh.conf
-    - watch_in:
-      - aodh_server_services
-{%- else %}
-  file.exists:
-   - name: {{ server.message_queue.ssl.get('cacert_file', server.cacert_file) }}
-   - require_in:
-     - file: /etc/aodh/aodh.conf
-   - watch_in:
-      - aodh_server_services
-{%- endif %}
-{%- endif %}
-
 {%- endif %}
 
 aodh_server_services:
