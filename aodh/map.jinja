@@ -54,3 +54,15 @@
 {%- if salt['pillar.get']('aodh:server:version', 'mitaka') in ['mitaka'] %}
     {%- do server.update({'services': server.services + server.webserved}) %}
 {%- endif %}
+
+{%- load_yaml as client_defaults %}
+
+Debian:
+  enabled: false
+  pkgs:
+    - python-aodhclient
+{%- endload %}
+
+{%- set client = salt['grains.filter_by'](client_defaults, merge=salt['pillar.get']('aodh:client')) %}
+{%- set upgrade = pillar.get('aodh', {}).get('upgrade', {}) %}
+

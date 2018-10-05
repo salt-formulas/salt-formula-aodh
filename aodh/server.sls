@@ -6,6 +6,7 @@
 {%- if server.version not in ['liberty', 'juno', 'kilo'] %}
 
 include:
+  - aodh.db.offline_sync
   - aodh._ssl.mysql
   - aodh._ssl.rabbitmq
   - apache
@@ -16,6 +17,7 @@ aodh_server_packages:
   - require_in:
     - sls: aodh._ssl.mysql
     - sls: aodh._ssl.rabbitmq
+    - sls: aodh.db.offline_sync
 
 /etc/aodh/aodh.conf:
   file.managed:
@@ -27,6 +29,8 @@ aodh_server_packages:
     - pkg: aodh_server_packages
     - sls: aodh._ssl.mysql
     - sls: aodh._ssl.rabbitmq
+  - require_in:
+    - sls: aodh.db.offline_sync
 
 {% for service_name in server.services %}
 {{ service_name }}_default:
@@ -64,6 +68,8 @@ aodh_general_logging_conf:
 {%- if server.logging.log_handlers.get('fluentd', {}).get('enabled', False) %}
       - pkg: aodh_fluentd_logger_package
 {%- endif %}
+    - require_in:
+      - sls: aodh.db.offline_sync
     - defaults:
         service_name: aodh
         _data: {{ server.logging }}
@@ -106,16 +112,6 @@ aodh_general_logging_conf:
 {% endfor %}
 
 {% endif %}
-
-aodh_syncdb:
-  cmd.run:
-  - name: aodh-dbsync
-  {%- if grains.get('noservices') %}
-  - onlyif: /bin/false
-  {%- endif %}
-  - require:
-    - file: /etc/aodh/aodh.conf
-    - pkg: aodh_server_packages
 
 {%- if server.get('role', 'secondary') == 'primary' %}
 {%- set cron = server.expirer.cron %}
@@ -213,6 +209,8 @@ aodh_server_services:
   {%- endif %}
   - watch:
     - file: /etc/aodh/aodh.conf
+  - require:
+    - sls: aodh.db.offline_sync
 
 {%- endif %}
 {%- endif %}
