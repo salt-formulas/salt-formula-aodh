@@ -681,6 +681,14 @@ cafile={{ server.identity.get('cacert_file', server.cacert_file) }}
 
 {%- if server.cache is defined %}
 memcached_servers = {%- for member in server.cache.members %}{{ member.host }}:{{ member.get('port', '11211') }}{% if not loop.last %},{% endif %}{%- endfor %}
+  {%- if server.cache.get('security', {}).get('enabled', False) %}
+memcache_security_strategy = {{ server.cache.security.get('strategy', 'ENCRYPT') }}
+    {%- if server.cache.security.secret_key is not defined or not server.cache.security.secret_key %}
+    {%- do salt.test.exception('server.cache.security.secret_key is not defined: Please add secret_key') %}
+    {%- else %}
+memcache_secret_key = {{ server.cache.security.secret_key }}
+    {%- endif %}
+  {%- endif %}
 {%- else %}
 token_cache_time = -1
 {%- endif %}
