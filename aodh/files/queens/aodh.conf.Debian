@@ -236,6 +236,18 @@ alarm_history_time_to_live = {{ server.ttl }}
 [healthcheck]
 {%- include "oslo_templates/files/queens/oslo/_healthcheck.conf" %}
 
+{%- if server.message_queue is defined %}
+{%- set _data = server.message_queue %}
+{%- if _data.engine == 'rabbitmq' %}
+    {%- set messaging_engine = 'rabbit' %}
+{%- else %}
+    {%- set messaging_engine = _data.engine %}
+{%- endif %}
+[oslo_messaging_{{ messaging_engine }}]
+{%- if _data.ssl is defined and 'cacert_file' not in _data.get('ssl', {}).keys() %}{% do _data['ssl'].update({'cacert_file': server.cacert_file}) %}{% endif %}
+{%- include "oslo_templates/files/queens/oslo/messaging/_" + messaging_engine + ".conf" %}
+{%- endif %}
+
 [oslo_policy]
 {%- if server.oslo_policy is defined %}
 {%- set _data = server.oslo_policy %}
