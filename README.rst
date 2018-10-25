@@ -21,37 +21,38 @@ Cluster aodh service
         version: mitaka
         ttl: 86400
         cluster: true
-      database:
-        engine: "mysql+pymysql"
-        host: 10.0.106.20
-        port: 3306
-        name: aodh
-        user: aodh
-        password: password
-      bind:
-        host: 10.0.106.20
-        port: 8042
-      identity:
-        engine: keystone
-        host: 10.0.106.20
-        port: 35357
-        tenant: service
-        user: aodh
-        password: password
-      message_queue:
-        engine: rabbitmq
-        port: 5672
-        user: openstack
-        password: password
-        virtual_host: '/openstack'
-      cache:
-        members:
-        - host: 10.10.10.10
-            port: 11211
-        - host: 10.10.10.11
-            port: 11211
-        - host: 10.10.10.12
-            port: 11211
+        enable_proxy_headers_parsing: True
+        database:
+          engine: "mysql+pymysql"
+          host: 10.0.106.20
+          port: 3306
+          name: aodh
+          user: aodh
+          password: password
+        bind:
+          host: 10.0.106.20
+          port: 8042
+        identity:
+          engine: keystone
+          host: 10.0.106.20
+          port: 35357
+          tenant: service
+          user: aodh
+          password: password
+        message_queue:
+          engine: rabbitmq
+          port: 5672
+          user: openstack
+          password: password
+          virtual_host: '/openstack'
+        cache:
+          members:
+          - host: 10.10.10.10
+              port: 11211
+          - host: 10.10.10.11
+              port: 11211
+          - host: 10.10.10.12
+              port: 11211
 
 Setting alarm history cleanup
 

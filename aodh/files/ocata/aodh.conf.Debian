@@ -1626,6 +1626,9 @@ rabbit_password = {{ server.message_queue.password }}
 # Whether the application is behind a proxy or not. This determines if the
 # middleware should parse the headers or not. (boolean value)
 #enable_proxy_headers_parsing = false
+{%- if server.enable_proxy_headers_parsing is defined %}
+enable_proxy_headers_parsing = {{ server.enable_proxy_headers_parsing }}
+{%- endif %}
 
 
 [oslo_policy]

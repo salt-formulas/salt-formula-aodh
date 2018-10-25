@@ -6,6 +6,7 @@ aodh:
     cluster: true
     ttl: 86400
     event_alarm_topic: alarm.all
+    enable_proxy_headers_parsing: True
     bind:
       host: 127.0.0.1
       port: 8042
