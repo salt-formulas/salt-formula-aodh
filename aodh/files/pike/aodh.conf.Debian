@@ -679,7 +679,7 @@ interface = {{ server.identity.get('endpoint_type', 'internal') }}
 cafile={{ server.identity.get('cacert_file', server.cacert_file) }}
 {%- endif %}
 
-{%- if server.cache is defined %}
+{%- if server.get('cache', {}).members is defined %}
 memcached_servers = {%- for member in server.cache.members %}{{ member.host }}:{{ member.get('port', '11211') }}{% if not loop.last %},{% endif %}{%- endfor %}
   {%- if server.cache.get('security', {}).get('enabled', False) %}
 memcache_security_strategy = {{ server.cache.security.get('strategy', 'ENCRYPT') }}

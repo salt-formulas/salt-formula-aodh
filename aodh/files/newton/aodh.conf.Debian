@@ -667,7 +667,7 @@ auth_uri = http://{{ server.identity.host }}:5000
 auth_url = http://{{ server.identity.host }}:35357
 interface = {{ server.identity.get('endpoint_type', 'internal') }}
 
-{%- if server.cache is defined %}
+{%- if server.get('cache', {}).members is defined %}
 memcached_servers = {%- for member in server.cache.members %}{{ member.host }}:{{ member.get('port', '11211') }}{% if not loop.last %},{% endif %}{%- endfor %}
 {%- else %}
 token_cache_time = -1
